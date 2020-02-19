@@ -1,4 +1,4 @@
-const db = require("../database/dbConfig.js");
+const db = require("../data/dbConfig.js");
 
 module.exports = {
   find,
@@ -32,7 +32,8 @@ function findById(id) {
 function update(id, changes) {
   return db("users")
     .where({ id })
-    .update(changes);
+    .update(changes)
+    .then(count => (count > 0 ? this.findById(id) : null));
 }
 
 function remove(id) {
