@@ -7,22 +7,28 @@ const { validateUserFields } = require("../middleware/validate.js");
 const Users = require("../users/user-model.js");
 
 const { jwtSecret } = require("../config/secrets.js");
+const { isUserUnique } = require("../middleware/isUserUnique.js");
 
 // register a new user
-router.post("/register", validateUserFields, async (req, res, next) => {
-  try {
-    let user = req.body;
-    const hash = bcrypt.hashSync(user.password, 10);
-    user.password = hash;
+router.post(
+  "/register",
+  validateUserFields,
+  isUserUnique,
+  async (req, res, next) => {
+    try {
+      let user = req.body;
+      const hash = bcrypt.hashSync(user.password, 10);
+      user.password = hash;
 
-    const newUser = await Users.add(user);
-    const token = signToken(newUser);
+      const newUser = await Users.add(user);
+      const token = signToken(newUser);
 
-    res.status(201).json({ user: newUser, token: token });
-  } catch (err) {
-    next(err);
+      res.status(201).json({ user: newUser, token: token });
+    } catch (err) {
+      next(err);
+    }
   }
-});
+);
 
 // user login route
 router.post("/login", validateUserFields, async (req, res, next) => {

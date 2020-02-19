@@ -6,27 +6,36 @@ const Users = require("./user-model.js");
 const { administrator } = require("../middleware/administrator.js");
 const { decodeToken } = require("../middleware/decodeToken.js");
 const { validateUserFields } = require("../middleware/validate.js");
+const { isUserUnique } = require("../middleware/isUserUnique.js");
 
 // update user
-router.put("/:id", decodeToken, validateUserFields, async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const payload = req.body;
+router.put(
+  "/:id",
+  decodeToken,
+  validateUserFields,
+  isUserUnique,
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const payload = req.body;
 
-    const user = await Users.findById(id);
+      const user = await Users.findById(id);
 
-    if (user) {
-      const hash = bcrypt.hashSync(payload.password, 10);
-      payload.password = hash;
+      if (user) {
+        const hash = bcrypt.hashSync(payload.password, 10);
+        payload.password = hash;
 
-      res.json(await Users.update(id, payload));
-    } else {
-      res.status(404).json({ message: "The specified user id does not exist" });
+        res.json(await Users.update(id, payload));
+      } else {
+        res
+          .status(404)
+          .json({ message: "The specified user id does not exist" });
+      }
+    } catch (err) {
+      next(err);
     }
-  } catch (err) {
-    next(err);
   }
-});
+);
 
 // delete user
 router.delete("/:id", decodeToken, async (req, res, next) => {
