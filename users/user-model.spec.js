@@ -1,9 +1,14 @@
+//test.todo("");
 const db = require("../data/dbConfig.js");
 const userModel = require("./user-model.js");
 
 describe("user model", () => {
   beforeEach(async () => {
     await db.seed.run();
+  });
+
+  afterAll(async () => {
+    await db.destroy();
   });
 
   test("find", async () => {

@@ -9,11 +9,11 @@ beforeEach(async () => {
   await db.seed.run();
 });
 
-describe("root", () => {
-  test("environment should be testing", () => {
-    expect(process.env.DB_ENV).toBe("testing");
-  });
+afterAll(async () => {
+  await db.destroy();
+});
 
+describe("auth and user router", () => {
   test("register", async () => {
     const res = await supertest(server)
       .post("/api/auth/register")

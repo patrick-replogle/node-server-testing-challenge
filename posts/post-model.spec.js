@@ -1,11 +1,16 @@
+//test.todo("testing");
 const postModel = require("./post-model.js");
 const db = require("../data/dbConfig.js");
 
-beforeEach(async () => {
-  await db.seed.run();
-});
-
 describe("post model", () => {
+  beforeEach(async () => {
+    await db.seed.run();
+  });
+
+  afterAll(async () => {
+    await db.destroy();
+  });
+
   test("find", async () => {
     const res = await postModel.find();
     expect(res.length).toBe(6);
